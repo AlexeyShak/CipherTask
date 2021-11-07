@@ -1,5 +1,5 @@
 const alphLength = 26;
-const shiftKey = 5;
+const shiftKey = 1;
 const upperCaseStartCode = 'A'.charCodeAt();
 const upperCaseEndCode = 'Z'.charCodeAt();
 
@@ -25,7 +25,7 @@ function encrypt(text, key) {
     throw 'text type is not string'
     
  }
- console.log(encrypt('zarTUI ebvjenv174 ;lans', shiftKey));
+
 
 function decrypt(text, key) {
     if(typeof text === 'string') { 
@@ -46,5 +46,6 @@ function decrypt(text, key) {
     throw 'text type is not string'
     
  }
- console.log(decrypt(encrypt('zarTUI ebvjenv174 ;lans', shiftKey), shiftKey));
 
+
+module.exports = {encrypt, decrypt, };
