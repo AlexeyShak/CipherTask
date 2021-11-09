@@ -46,6 +46,13 @@ function decrypt(text, key) {
     throw 'text type is not string'
     
  }
+function ceasarE(text) {
+    return encrypt(text, 1);   
+};
+
+function ceasarD(text) {
+    return decrypt(text, 1);
+};
 
 
-module.exports = {encrypt, decrypt, };
+module.exports = {encrypt, decrypt, ceasarD, ceasarE, };
