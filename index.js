@@ -4,24 +4,28 @@ const fs = require('fs');
 const {atbash} = require('./chipers/atbash');
 const {ceasarD, ceasarE} = require('./chipers/ceasarCipher');
 const {rot8e, rot8d} = require('./chipers/rot8');
+const {stringCheck, inputTextValid} = require('./validators/validators');
 
 const text = `I wander thro’ each charter’d street,
 Near where the charter’d Thames does flow.
-And mark in every face I meet
+And mark in every face I meet 
 Marks of weakness, marks of woe.`;
 
 console.log('ceasar: ', ceasarE('asdlvjkqwnlj'), ceasarD(ceasarE('asdlvjkqwnlj')));
 console.log('atbash: ', atbash('artyom luchshiy uchitel'), atbash(atbash('artyom luchshoy uchitel')));
 console.log('rot: ', rot8e('artyom luchshoy uchitel'), rot8d(rot8e('artyom luchshoy uchitel')));
 
-console.log('end result', atbash(rot8d(ceasarE(ceasarE(text)))) )
+console.log(`end result: \n`, ceasarD(rot8d(atbash(rot8e(ceasarE(atbash(text)))))) )
 
 const pathRead = './fs/inputText.txt';
 const pathWrite ='./fs/outputText.txt';
 
-const sequence = 'C1-C1-R0-A';
+const sequence = 'C0-R0-A-R1-C1-A';
 
+inputTextValid(pathRead);
+stringCheck(sequence);
 let readableStream = fs.createReadStream(pathRead, 'utf8');
 let writeableStream = fs.createWriteStream(pathWrite);
 const myTranformStream = new myTranform(sequence);
 readableStream.pipe(myTranformStream).pipe(writeableStream);
+

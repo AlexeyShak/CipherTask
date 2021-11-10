@@ -21,7 +21,7 @@ function atbash(text) {
         });
         return result.join('');
     };
-    throw 'text type is not string';
+    throw 'text type is not a string';
 }
 module.exports = {atbash};
     
