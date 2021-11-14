@@ -1,4 +1,4 @@
-const alphLength = 26;
+const { throwError } = require("../errors");
 
 const upperCaseStartCode = 'A'.charCodeAt();
 const upperCaseEndCode = 'Z'.charCodeAt();
@@ -21,7 +21,7 @@ function atbash(text) {
         });
         return result.join('');
     };
-    throw 'text type is not a string';
+    throwError('Not a string!', 1);
 }
 module.exports = {atbash};
     

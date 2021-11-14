@@ -1,105 +1,88 @@
 const fs = require('fs');
 
-function stringCheck(string){
+const { throwError } = require("../errors");
+const CONFIG_STRING_OPTIONS = ['A','C1','C0','R1','R0'];
+
+function configStringValidator(string){
     if(typeof string === 'string' && string.includes('-')){
-        let cipherNamesArr = string.split('-');
-        cipherNamesArr.forEach(cipherName => {
-            if(['A','C1','C0','R1','R0'].includes(cipherName)){
+    
+        string.split('-').forEach(cipherName => {
+            if(CONFIG_STRING_OPTIONS.includes(cipherName)){
                 return true;
             };
-            throw 'wrong format of config string ';
+            throwError('Invalid parametors of config string!', 1);
         });
         return string ; 
     };
-    throw 'wrong format of config string ';
+    throwError('Wrong format of config string!', 1);
 }
-    
 
-
-function inputTextValid(path){
+function pathValidator(path){
     if(typeof path !== 'string' || !path.length || !path.endsWith('.txt')){
-        throw 'path is required';
+        throwError('Path is required!', 1);
     }
     try{
         fs.accessSync(path, fs.constants.F_OK);
         return path; 
     } catch (err){
-        throw 'input file not found';
+        throwError('File does not exist!', 1);
     }
 }
                      
-
-function consoleValidator(consoleOptions){
-    let sequince = null;
-    let inputPath = null;
-    let outputPath = null;
-
+function countKeys(consoleOptions) {
     let counterC = 0;
     let counterI = 0;
     let counterO = 0;
+
     for (let i = 0; i < consoleOptions.length; i++){
-        if(consoleOptions[i] == '-c' || consoleOptions[i] == '--config'){
-            counterC = counterC + 1;
-        };
-        if(consoleOptions[i] == '-i'|| consoleOptions[i] == '--input'){
-            counterI++;
-        };
-        if(consoleOptions[i] == '-o' || consoleOptions[i] == '--output'){
-            counterO++;
+        switch(consoleOptions[i]) {
+            case '-c' :
+            case '--config':
+                counterC++;
+                break;
+            case '-i':
+            case '--input':
+                counterI++;
+                break;
+            case '-o':
+            case '--output':
+                counterO++;
+                break; 
         }
     };
-    switch(counterC){
+    return {counterO, counterI, counterC};
+}
+
+function keyHandler(key, keyName, keyOptions, consoleOptions, action) {
+    let keyValue = null;
+    switch(key){
         case 0:
-            throw 'no config srtring';
+            throwError(`${keyName} is requiered!`, 1);
         case 1:{
             let index = consoleOptions.findIndex(element => {
-                return (element == '-c' || element == '--config');
+                return keyOptions.includes(element);
              });
             if(index == (consoleOptions.length - 1)){
-                 throw 'wrong format of config string'
+                throwError(`No value provided for ${keyName}!`, 1);
              };
             let value = consoleOptions[index + 1];
-            sequince = stringCheck(value); 
+            keyValue = action(value); 
         };
             break;
         default:
-            throw 'duplicated config string';
+            throwError(`Duplicated ${keyName}!`, 1);
     };
-    switch(counterI){
-        case 0:
-            console.log('no input key in console');
-            break;
-        case 1:
-            let index = consoleOptions.findIndex(element => {
-                return (element == '-i' || element == '--input');
-             });
-            if(index == (consoleOptions.length - 1)){
-                 throw 'wrong format of input string'
-             };
-            let value = consoleOptions[index + 1];
-            inputPath = inputTextValid(value); 
-            break; 
-        default:
-            throw 'duplicaded input key'
-        };
-    switch(counterO){
-        case 0:
-            console.log('no output key in console');
-            break;
-        case 1:
-            let index = consoleOptions.findIndex(element =>{
-                return(element == '-o' || element == '--output');
-            });
-            if(index == (consoleOptions.length - 1)){
-                throw 'wrong format of output string';
-            };
-           let value = consoleOptions[index + 1];
-           outputPath = value; 
-           break;  
-        default:
-            throw 'duplicaded output key'  
-    }
+    return keyValue;
+}
+
+function consoleValidator(consoleOptions){
+    const counters = countKeys(consoleOptions);
+
+    const sequince = keyHandler(counters.counterC, 'Config string', ['-c', '--config'], consoleOptions, configStringValidator);
+    const inputPath = keyHandler(counters.counterI, 'Input path', ['-i', '--input'], consoleOptions, pathValidator);
+    const outputPath = keyHandler(counters.counterO, 'Output path', ['-o', '--output'], consoleOptions, pathValidator);
+
     return {sequince, inputPath, outputPath};          
 }
     
-module.exports = {stringCheck, inputTextValid, consoleValidator};
+module.exports = {configStringValidator, pathValidator, consoleValidator};

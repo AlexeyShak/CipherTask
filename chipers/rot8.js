@@ -1,4 +1,5 @@
-const {encrypt, decrypt} = require('./ceasarCipher')
+const {encrypt, decrypt} = require('./ceasarCipher');
+
 function rot8e(text){
     return encrypt(text,8);
 }
