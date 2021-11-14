@@ -15,7 +15,6 @@ function encrypt(text, key) {
     return text.split('').map(letter => {
         if(letter.charCodeAt() >= upperCaseStartCode && letter.charCodeAt() <= upperCaseEndCode) {
             return String.fromCharCode(upperCaseStartCode + (letter.charCodeAt() - upperCaseStartCode + key) % alphLength);
-
         }
         else if(letter.charCodeAt() >= lowerCaseStartCode && letter.charCodeAt() <= lowerCaseEndCode) {
             return String.fromCharCode(lowerCaseStartCode + (letter.charCodeAt() - lowerCaseStartCode + key) % alphLength);  
@@ -27,24 +26,22 @@ function encrypt(text, key) {
 
 
 function decrypt(text, key) {
-    if(typeof text === 'string') { 
-        let a = text.split(''); 
-        let result = [];
-        a.forEach(letter => {
-            if(letter.charCodeAt() >= upperCaseStartCode && letter.charCodeAt() <= upperCaseEndCode) {
-                result.push(String.fromCharCode(upperCaseEndCode - (upperCaseEndCode - letter.charCodeAt() + key) % alphLength ));
+    if(typeof text !== 'string' || typeof key !== 'number') {
+        throwError('Wrong decryption parametors!', 1);
+    }
 
+    return text.split('').map(letter => {
+            if(letter.charCodeAt() >= upperCaseStartCode && letter.charCodeAt() <= upperCaseEndCode) {
+                return String.fromCharCode(upperCaseEndCode - (upperCaseEndCode - letter.charCodeAt() + key) % alphLength );
             }
             else if(letter.charCodeAt() >= lowerCaseStartCode && letter.charCodeAt() <= lowerCaseEndCode) {
-                result.push(String.fromCharCode(lowerCaseEndCode - (lowerCaseEndCode - letter.charCodeAt() + key) % alphLength )) 
+                return (String.fromCharCode(lowerCaseEndCode - (lowerCaseEndCode - letter.charCodeAt() + key) % alphLength )) 
             }
-            else result.push(letter);
-        });
-        return result.join('');
+            return letter;
+        }).join('');
     };
-    throwError('Not a string!', 1);
+    // throwError('Not a string!', 1);
     
- }
 function ceasarE(text) {
     return encrypt(text, 1);   
 };
