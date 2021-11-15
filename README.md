@@ -17,7 +17,53 @@ Config is a string with pattern `{XY(-)}n`, where:
 2.  **-i, --input**: a path to input file
 3.  **-o, --output**: a path to output file
 
+# Уточнение по параметрам ввода информации в командную строку
 
+ Увы, при "причесывании" кода в воскресенье я снeс возможность не вводить input и output в аргументах консоли, в commite от 13.11.2021 это условие реализовывается. Если у Вас-таки возникнет желание глянуть как я реализую эту возможность, для проверки этого условия работы данной программы в "причесанном" виде можете в файле validators.js заменить функцию KeyHandler на вот эту: 
+
+function keyHandler(key, keyName, keyOptions, consoleOptions, action) {
+    let keyValue = null;
+    switch(key){
+        case 0:
+            if(key === '-c' || key === '--config') {
+                throwError(`${keyName} is requiered!`, 1);
+            }
+            break;
+        case 1:{
+            let index = consoleOptions.findIndex(element => {
+                return keyOptions.includes(element);
+             });
+            if(index == (consoleOptions.length - 1)){
+                throwError(`No value provided for ${keyName}!`, 1);
+             };
+            let value = consoleOptions[index + 1];
+            keyValue = action(value); 
+        };
+            break;
+        default:
+            throwError(`Duplicated ${keyName}!`, 1);
+    };
+    return keyValue;
+}
+Также значнение config не принимает шифрование только одним шифром, увы тоже заметил это только сегодня. Там же в validators.js функция configStringValidator содердит в условном блоке if лишнее условие  string.includes('-'). Разумеется, функция должна выглядеть таким образом:
+
+function configStringValidator(string){
+    if(typeof string === 'string'){
+    
+        string.split('-').forEach(cipherName => {
+            if(CONFIG_STRING_OPTIONS.includes(cipherName)){
+                return true;
+            };
+            throwError('Invalid parametors of config string!', 1);
+        });
+        return string ; 
+    };
+    throwError('Wrong format of config string!', 1);
+}
+
+
+Прошу прощения за неудобства, я понимаю, что накосячил с финальным тестингом программы, но зато хоть толику cross-check надеюсь Вам облегчил)
+Хорошего дня!)
 
 # Usage
 **Usage example:**  
