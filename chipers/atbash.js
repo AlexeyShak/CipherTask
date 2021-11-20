@@ -22,6 +22,6 @@ function atbash(text) {
         
     
 }
-module.exports = {atbash};
+module.exports = {atbash, upperCaseEndCode, upperCaseStartCode};
     
  

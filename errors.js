@@ -3,4 +3,4 @@ module.exports = {
         process.exitCode = code || 1;
         throw message ?  Error(message) : Error('Unhandeled error');
     }
-}
+} 
