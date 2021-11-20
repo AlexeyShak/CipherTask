@@ -3,18 +3,17 @@ const fs = require('fs');
 const { throwError } = require("../errors");
 const CONFIG_STRING_OPTIONS = ['A','C1','C0','R1','R0'];
 
-function configStringValidator(string){
-    if(typeof string === 'string' && string.includes('-')){
-    
-        string.split('-').forEach(cipherName => {
-            if(CONFIG_STRING_OPTIONS.includes(cipherName)){
-                return true;
-            };
-            throwError('Invalid parametors of config string!', 1);
-        });
-        return string ; 
-    };
-    throwError('Wrong format of config string!', 1);
+function configStringValidator(string)
+    { if(typeof string === 'string'){
+    string.split('-').forEach(cipherName => {
+        if(CONFIG_STRING_OPTIONS.includes(cipherName)){
+            return true;
+        };
+        throwError('Invalid parametors of config string!', 1);
+    });
+    return string ; 
+};
+throwError('Wrong format of config string!', 1);
 }
 
 function pathValidator(path){
@@ -57,7 +56,10 @@ function keyHandler(key, keyName, keyOptions, consoleOptions, action) {
     let keyValue = null;
     switch(key){
         case 0:
-            throwError(`${keyName} is requiered!`, 1);
+            if(keyOptions.includes('-c')){
+                throwError(`${keyName} is requiered!`, 1);
+            }
+            break;
         case 1:{
             let index = consoleOptions.findIndex(element => {
                 return keyOptions.includes(element);
@@ -82,7 +84,8 @@ function consoleValidator(consoleOptions){
     const inputPath = keyHandler(counters.counterI, 'Input path', ['-i', '--input'], consoleOptions, pathValidator);
     const outputPath = keyHandler(counters.counterO, 'Output path', ['-o', '--output'], consoleOptions, pathValidator);
 
-    return {sequince, inputPath, outputPath};          
+    return {sequince, inputPath, outputPath}; 
+            
 }
-    
-module.exports = {configStringValidator, pathValidator, consoleValidator};
+   
+module.exports = {configStringValidator, pathValidator, consoleValidator, keyHandler};
