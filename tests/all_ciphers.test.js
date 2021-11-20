@@ -2,6 +2,7 @@ const {atbash} = require('../chipers/atbash');
 const { ceasarE, ceasarD,} = require('../chipers/ceasarCipher');
 const { rot8e, rot8d } = require('../chipers/rot8');
 const {configStringValidator, pathValidator, consoleValidator, keyHandler} = require('../validators/validators');
+const { throwError } = require("../errors");
 
 describe('Atbash cipher tests', () => {
     let text = 'AAAAББББzzzzюююю111';
@@ -88,6 +89,7 @@ describe('Pathvalidator', () =>{
 
 describe('Console validator', () => {
     const validConsoleOptions = ['-c', 'C1-R1-C0-C0-A-R0-R1-R1-A-C1', '-i', './input.txt', '-o', './output.txt'];
+    const doubleConfigArg =['-c', 'C1-R1-C0-C0-A-R0-R1-R1-A-C1', '-i', './input.txt', '-o', './output.txt', '-c', 'C1-R1-C0-C0-A-R0-R1-R1-A-C1'] 
     const doubleInputCO = ['-c', "C1-C1", '-i', "./input.txt", '-o', "./output.txt", '--input', './input.txt'];
     const noConfigArgument = ['-i', "input.txt", '-o', "output.txt"];
     const non_existentInputArg = ['-c', "C1-C1", '-i', "inputX.txt", '-o', "output.txt"];
@@ -110,8 +112,12 @@ describe('Console validator', () => {
     }); 
     test('should return object containig sequinse', () => { 
         expect(consoleValidator(validConsoleOptionsNoInput)).toStrictEqual({sequince: 'C1-R1-C0-C0-A-R0-R1-R1-A-C1', inputPath: null, outputPath: null});
-    });      
+    });
+    test('should return error if config argument is doublicated', () => { 
+        expect(() => consoleValidator(doubleConfigArg)).toThrow(Error);
+    });     
 })
+
 describe('KeyHandler', () => {
     test('action to be called', () => {
         const myMock = jest.fn();
@@ -123,5 +129,28 @@ describe('KeyHandler', () => {
         keyHandler(1, 'config string', ['-c','--config'], ['-c', 'C1-C1'], myMock)
         expect(myMock.mock.calls[0][0]).toBe('C1-C1');
     })
-
 })
+
+describe('ThrowError', () => {
+    test('ThrowError function should throw error message if it is defined', () => {
+        expect(() => throwError('example error', 1)).toThrow('example error');
+    }) 
+    test('ThrowError function should throw "Unhandeled error" if error message is undefined ', () => {
+        expect(() => throwError()).toThrow(Error('Unhandeled error'));
+    }) 
+})
+
+describe('cipher usage scenarios from first task description usage examples',() => {
+    ex1 = ["node", "my_ciphering_cli", "-c", "C1-C1-R0-A", "-i", "./input.txt", "-o", "./output.txt"];
+    ex2 = ["node", "my_ciphering_cli", "-c", "C1-C0-A-R1-R0-A-R0-R0-C1-A", "-i", "./input.txt", "-o", "./output.txt"];
+    ex3 = ["node", "my_ciphering_cli", "-c","A-A-A-R1-R0-R0-R0-C1-C1-A", "-i", "./input.txt", "-o", "./output.txt"];
+    ex4 = ["node", "my_ciphering_cli", "-c","C1-R1-C0-C0-A-R0-R1-R1-A-C1", "-i", "./input.txt", "-o", "./output.txt"];
+    
+    test('should return object containig sequinse, input path & output path', ()=>{
+        expect(consoleValidator(ex1)).toStrictEqual({sequince: 'C1-C1-R0-A',inputPath: "./input.txt", outputPath: "./output.txt"});
+        expect(consoleValidator(ex2)).toStrictEqual({sequince: 'C1-C0-A-R1-R0-A-R0-R0-C1-A',inputPath: "./input.txt", outputPath: "./output.txt"});
+        expect(consoleValidator(ex3)).toStrictEqual({sequince: 'A-A-A-R1-R0-R0-R0-C1-C1-A',inputPath: "./input.txt", outputPath: "./output.txt"});
+        expect(consoleValidator(ex4)).toStrictEqual({sequince: 'C1-R1-C0-C0-A-R0-R1-R1-A-C1',inputPath: "./input.txt", outputPath: "./output.txt"});   
+    });
+})
+
