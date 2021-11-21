@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const { throwError } = require("../errors");
 const CONFIG_STRING_OPTIONS = ['A','C1','C0','R1','R0'];
@@ -16,13 +17,15 @@ function configStringValidator(string)
 throwError('Wrong format of config string!', 1);
 }
 
-function pathValidator(path){
-    if(typeof path !== 'string' || !path.length || !path.endsWith('.txt')){
+function pathValidator(inputPath){
+
+    if(typeof inputPath !== 'string' || !inputPath.length || !inputPath.endsWith('.txt')){
         throwError('Path is required!', 1);
     }
-    try{
-        fs.accessSync(path, fs.constants.F_OK);
-        return path; 
+    try{ 
+        const resolvedPath = path.resolve(inputPath);
+        fs.accessSync(resolvedPath, fs.constants.F_OK);
+        return resolvedPath; 
     } catch (err){
         throwError('File does not exist!', 1);
     }
