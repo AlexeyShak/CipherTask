@@ -98,7 +98,7 @@ describe('Console validator', () => {
     test('should return object containig sequinse, input path & output path', () => { 
         expect(consoleValidator(validConsoleOptions)).toStrictEqual({sequince: 'C1-R1-C0-C0-A-R0-R1-R1-A-C1',inputPath: "./input.txt", outputPath: "./output.txt"})
     });
-    test('should return error if inputKey is doubled', () => { 
+    test('should return error if inputKey is doublicated', () => { 
             expect(() => consoleValidator(doubleInputCO)).toThrow(Error);
     });
     test('should return error if config argument is not specified', () => { 
