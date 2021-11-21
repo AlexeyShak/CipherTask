@@ -107,3 +107,10 @@ $ node my_ciphering_cli -c "C1-R1-C0-C0-A-R0-R1-R1-A-C1" -i "./input.txt" -o "./
 
 > output.txt
 > `This is secret. Message about "_" symbol!`
+
+# Tests
+
+Make sure you have jest installed globally. To do it use ```npm i -g jest```   
+To start testing: ```jest -t```  
+To check coverage: ```jest --coverage```  
+
